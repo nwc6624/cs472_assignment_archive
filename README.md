@@ -30,7 +30,7 @@ The repository also includes a **final group project**, **Best Eastern**, archiv
 
 ---
 
-## Assignments  
+## Assignments  (Not all semester assignments are archived here)
 
 ### PA01 - OOP Ecosystem Simulation  
 - A simulation project to understand object-oriented programming principles.  
