@@ -1,0 +1,89 @@
+<project name="PA04-CodeCoverage" basedir="." default="compile" xmlns:jacoco="antlib:org.jacoco.ant">
+    <!-- Project properties -->
+    <property name="src.dir" value="src/main"/>  <!-- Directory for source files -->
+    <property name="test.dir" value="src/test"/>  <!-- Directory for test files -->
+    <property name="build.dir" value="build"/>  <!-- Build output directory -->
+    <property name="lib.dir" value="lib"/>  <!-- Directory for dependency libraries -->
+    <property name="report.dir" value="${build.dir}/report"/>  <!-- Output directory for reports -->
+
+    <!-- Classpath definition -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>  <!-- Include all jar files in lib directory -->
+        <pathelement location="${build.dir}/classes"/>  <!-- Compiled classes directory -->
+        <pathelement location="${build.dir}/test-classes"/>  <!-- Compiled test classes directory -->
+    </path>
+
+    <!-- Define task for JaCoCo coverage tool -->
+    <taskdef resource="org/jacoco/ant/antlib.xml" uri="antlib:org.jacoco.ant" classpathref="classpath"/>
+
+    <!-- Target to clean the build and reports directory -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>  <!-- Deletes the build directory -->
+        <delete dir="${report.dir}"/>  <!-- Deletes the report directory -->
+    </target>
+
+    <!-- Target to compile source and test code -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.dir}/classes"/>  <!-- Creates directory for compiled classes -->
+        <mkdir dir="${build.dir}/test-classes"/>  <!-- Creates directory for compiled test classes -->
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" includeantruntime="false" classpathref="classpath"/>
+        <javac srcdir="${test.dir}" destdir="${build.dir}/test-classes" includeantruntime="false" classpathref="classpath"/>
+    </target>
+
+    <!-- Target to run JUnit tests -->
+    <target name="test" depends="compile">
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement path="${build.dir}/test-classes"/>
+                <pathelement path="${build.dir}/classes"/>
+            </classpath>
+            <formatter type="brief" usefile="false"/>  <!-- Test result formatter -->
+            <batchtest todir="${build.dir}/test-results">
+                <fileset dir="${test.dir}" includes="**/*Test*.java"/>  <!-- Includes all Java test files -->
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- Target to generate JaCoCo code coverage report -->
+    <target name="coverage" depends="test">
+        <mkdir dir="${report.dir}/coverage"/>  <!-- Creates directory for coverage reports -->
+        <jacoco:coverage destfile="${report.dir}/jacoco.exec">  <!-- JaCoCo coverage task -->
+            <junit fork="true" printsummary="yes">
+                <classpath>
+                    <path refid="classpath"/>
+                    <pathelement path="${build.dir}/test-classes"/>
+                    <pathelement path="${build.dir}/classes"/>
+                </classpath>
+                <batchtest todir="${build.dir}/test-results">
+                    <fileset dir="${test.dir}" includes="**/*Test*.java"/>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
+        <jacoco:report>
+            <executiondata>
+                <file file="${report.dir}/jacoco.exec"/>  <!-- Coverage data file -->
+            </executiondata>
+            <structure name="JaCoCo Report">  <!-- Report structure definition -->
+                <classfiles>
+                    <fileset dir="${build.dir}/classes"/>
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}"/>
+                </sourcefiles>
+            </structure>
+            <html destdir="${report.dir}/coverage"/>  <!-- Generates HTML coverage report -->
+            <xml destfile="${report.dir}/coverage/report.xml"/>  <!-- Generates XML coverage report -->
+            <csv destfile="${report.dir}/coverage/report.csv"/>  <!-- Generates CSV coverage report -->
+        </jacoco:report>
+    </target>
+
+    <!-- Target to run the main application -->
+    <target name="run" depends="compile">
+        <java classname="sorting.Runner" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </java>
+    </target>
+</project>

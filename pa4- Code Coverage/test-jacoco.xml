@@ -1,0 +1,25 @@
+<project name="TestJaCoCoSetup" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+    <property name="lib.dir" value="C:\Users\nwc66\Downloads\PA04-Code_Coverage_Caulfield\PA04_Code_Coverage\lib"/>
+    <property name="build.dir" value="build"/>
+    <property name="src.dir" value="src"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="jacocoant.jar"/>
+        <pathelement path="${build.dir}"/>
+    </path>
+
+    <taskdef resource="org/jacoco/ant/antlib.xml" uri="jacoco" classpathref="classpath"/>
+
+    <!-- Optional: Compile Java files if not already compiled -->
+    <target name="compile">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="classpath"/>
+    </target>
+
+    <target name="test-jacoco" depends="compile">
+        <jacoco:coverage destfile="${build.dir}/jacoco.exec">
+            <java classname="HelloWorld" classpathref="classpath" fork="true"/>
+        </jacoco:coverage>
+        <echo message="JaCoCo coverage task completed. Coverage report should now be generated."/>
+    </target>
+</project>

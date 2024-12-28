@@ -1,0 +1,60 @@
+<project name="PA03-UnitTesting" basedir="." default="test">
+    <description>
+        Apache Ant build script for PA03 Unit Testing project.
+    </description>
+
+    <!-- Define property for easier reference -->
+    <property name="src.dir" value="src/main"/>
+    <property name="test.dir" value="src/test"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
+
+    <!-- Define the classpath to include JUnit and Hamcrest jars -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+
+    <!-- Clean task -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- Compile task -->
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.dir}/classes"/>
+        <mkdir dir="${build.dir}/test-classes"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes" includeantruntime="false">
+            <classpath refid="classpath"/>
+        </javac>
+        <javac srcdir="${test.dir}" destdir="${build.dir}/test-classes" includeantruntime="false">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement location="${build.dir}/classes"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Run task -->
+    <target name="run" depends="compile">
+        <java classname="app.Runner" fork="true">
+            <classpath>
+                <pathelement path="${build.dir}/classes"/>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Test task -->
+    <target name="test" depends="compile">
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement path="${build.dir}/test-classes"/>
+                <pathelement path="${build.dir}/classes"/>
+            </classpath>
+            <formatter type="brief" usefile="false"/>
+            <batchtest fork="yes" todir="${build.dir}/test-results">
+                <fileset dir="${test.dir}" includes="**/*Test*.java"/>
+            </batchtest>
+        </junit>
+    </target>
+</project>

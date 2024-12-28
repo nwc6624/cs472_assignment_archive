@@ -1,0 +1,52 @@
+
+<!-- PA_01 Assignment for CS 472: Software Engineering
+    File Name: build.xml
+    Date: 2/29/2024
+    Name: Noah Caulfield
+
+ **Please note, the package name has been changed in Runner.kava,
+ BinarySearch.java, and Quicksort.java to remove the src.xxx.xxx prefix**
+
+
+ Intended commands for running: "ant compile", "ant run", and "ant clean"
+ *Tested on Windows 11*
+    -->
+    <project name="PA02" default="run" basedir=".">
+        <property name="src.dir" value="src"/>
+        <property name="build.dir" value="build"/>
+        <property name="classes.dir" value="${build.dir}/classes"/>
+        <!-- Ensure this is the fully qualified name of your main class, including package names -->
+        <property name="main-class" value="main.app.Runner"/>
+
+        <!-- Initialize directory structure -->
+        <target name="init">
+            <echo message="Initializing build directories..."/>
+            <mkdir dir="${classes.dir}"/>
+        </target>
+
+        <!-- Compile the Java source code -->
+        <target name="compile" depends="init">
+            <echo message="Compiling Java source files..."/>
+            <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
+                <classpath>
+                    <pathelement path="${classes.dir}"/>
+                </classpath>
+            </javac>
+        </target>
+
+        <!-- Run the Java program -->
+        <target name="run" depends="compile">
+            <echo message="Running Java application..."/>
+            <java classname="${main-class}" fork="true">
+                <classpath>
+                    <pathelement path="${classes.dir}"/>
+                </classpath>
+            </java>
+        </target>
+
+        <!-- Clean up build artifacts -->
+        <target name="clean">
+            <echo message="Cleaning build directories..."/>
+            <delete dir="${build.dir}"/>
+        </target>
+    </project>
